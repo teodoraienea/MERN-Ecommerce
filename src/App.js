@@ -1,17 +1,21 @@
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import React from 'react';
+import { Routes, Route, useLocation } from 'react-router-dom';
+import Home from './components/Home';
+import Login from './components/Login';
+import Header from './components/Header';
 
 function App() {
-  const [message, setMessage] = useState('');
-
-  useEffect(() => {
-    axios.get('http://localhost:5000/api/hello')
-      .then(response => setMessage(response.data.message));
-  }, []);
+  const location = useLocation();
+  const showHeader = location.pathname === '/';
 
   return (
     <div>
-      <h1>{message}</h1>
+      {showHeader && <Header />}
+      
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/login" element={<Login />} />
+      </Routes>
     </div>
   );
 }
