@@ -8,7 +8,7 @@ require('dotenv').config();
 
 // Register User
 router.post(
-  '/',
+  '/register',
   [
     check('username', 'Username is required').not().isEmpty(),
     check('email', 'Please include a valid email').isEmail(),
@@ -65,7 +65,7 @@ router.post(
 
 // Authenticate User
 router.post(
-  '/auth',
+  '/login',
   [
     check('email', 'Please include a valid email').isEmail(),
     check('password', 'Password is required').exists()
@@ -92,6 +92,7 @@ router.post(
       const payload = {
         user: {
           id: user.id,
+          name: user.username,
           role: user.role
         }
       };
@@ -102,7 +103,7 @@ router.post(
         { expiresIn: '5d' },
         (err, token) => {
           if (err) throw err;
-          res.json({ token });
+          res.json({ token, user: payload.user });
         }
       );
     } catch (err) {
