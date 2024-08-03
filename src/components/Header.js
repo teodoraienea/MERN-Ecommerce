@@ -1,11 +1,37 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
+import { FaUser } from "react-icons/fa";
 import './Headerstyle.css';
 
 const Header = () => {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [user, setUser] = useState(null);
 
   const toggleMenu = () => {
     setMenuOpen(!menuOpen);
+  };
+
+  useEffect(() => {
+    try {
+      const loggedInUser = localStorage.getItem('user');
+      console.log("Stored user data:", loggedInUser, );
+
+      if (loggedInUser) {
+        const parsedUser = JSON.parse(loggedInUser);
+        setUser(parsedUser);
+      }
+    } catch (error) {
+      console.error("Failed to parse user data:", error);
+      // Optionally clear corrupted data
+      localStorage.removeItem('user');
+    }
+  }, []);
+
+  const getInitials = (username) => {
+    if (!username) return '';
+    const names = username.split(' ');
+    const initials = names.map((n) => n[0]).join('');
+    return initials.toUpperCase();
   };
 
   return (
@@ -20,12 +46,25 @@ const Header = () => {
       </div>
       <nav className={`menu ${menuOpen ? 'open' : ''}`}>
         <ul>
-          <li><a href="/">Home</a></li>
-          <li><a href="/shop">Shop</a></li>
-          <li><a href="/cart">Cart</a></li>
-          <li><a href="/contact">Contact</a></li>
+          <li><Link to="/">Home</Link></li>
+          <li><Link to="/shop">Shop</Link></li>
+          <li><Link to="/cart">Cart</Link></li>
+          <li><Link to="/contact">Contact</Link></li>
         </ul>
       </nav>
+      <div className="right-menu">
+        <ul>
+          <li><Link to="/favourites">Favourites</Link></li>
+          <li><Link to="/mychart">My Chart</Link></li>
+          <li>
+            {user ? (
+              <div className="user-initials">{getInitials(user.name)}</div>
+            ) : (
+              <FaUser />
+            )}
+          </li>
+        </ul>
+      </div>
     </header>
   );
 };
